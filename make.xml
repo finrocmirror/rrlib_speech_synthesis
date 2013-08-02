@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://rrlib.org/xml/1.0/make.dtd">
+<targets>
+
+  <rrlib name="speech_synthesis">
+    <sources>
+      voices.cpp
+    </sources>
+  </rrlib>
+
+  <rrlib name="speech_synthesis_base">
+    <sources>
+      base/*
+    </sources>
+  </rrlib>
+
+  <rrlib name="speech_synthesis_espeak" optional="true"
+        libs="espeak">
+    <sources>
+      espeak/*  
+    </sources>
+  </rrlib>
+
+  <rrlib name="speech_synthesis_festival" optional="true"
+        libs="festival">
+    <sources>
+      festival/*
+    </sources>
+  </rrlib>
+ 
+  <testprogram name="voices">
+    <sources>
+      test/test_voices.cpp
+    </sources>
+  </testprogram>
+
+</targets>
