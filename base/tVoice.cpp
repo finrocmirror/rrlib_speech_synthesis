@@ -33,11 +33,11 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "rrlib/speech_synthesis/base/log_messages.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -94,7 +94,7 @@ tVoice::tMessageProcessorImplementation::tMessageProcessorImplementation() :
   run_processing_thread(true),
   processing_thread(ProcessMessages, this)
 {
-  RRLIB_LOG_PRINT(DEBUG, "Started thread");
+  LOG_PRINT(DEBUG, "Started thread");
 }
 
 //----------------------------------------------------------------------
@@ -102,9 +102,14 @@ tVoice::tMessageProcessorImplementation::tMessageProcessorImplementation() :
 //----------------------------------------------------------------------
 tVoice::tMessageProcessorImplementation::~tMessageProcessorImplementation()
 {
-  RRLIB_LOG_PRINT(DEBUG, "Stopping thread");
-  this->run_processing_thread = false;
-  this->message_buffer_empty.notify_all();
+  LOG_PRINT(DEBUG, "Stopping thread");
+  {
+    LOG_PRINT(DEBUG_VERBOSE_3, "Trying to acquiring lock");
+    std::unique_lock<std::mutex> message_buffer_lock(this->message_buffer_mutex);
+    LOG_PRINT(DEBUG_VERBOSE_3, "Acquired lock");
+    this->run_processing_thread = false;
+    this->message_buffer_empty.notify_all();
+  }
   this->processing_thread.join();
 }
 
@@ -113,17 +118,22 @@ tVoice::tMessageProcessorImplementation::~tMessageProcessorImplementation()
 //----------------------------------------------------------------------
 void tVoice::tMessageProcessorImplementation::AddMessage(tVoice *voice, const std::string &text)
 {
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Trying to acquiring lock");
-  std::unique_lock<std::mutex> message_buffer_lock(this->message_buffer_mutex);
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Acquired lock");
+  if (text.empty())
+  {
+    return;
+  }
 
-  tMessage message{voice, text};
+  LOG_PRINT(DEBUG_VERBOSE_3, "Trying to acquiring lock");
+  std::unique_lock<std::mutex> message_buffer_lock(this->message_buffer_mutex);
+  LOG_PRINT(DEBUG_VERBOSE_3, "Acquired lock");
+
+  tMessage message {voice, text};
   if (this->message_buffer_overrun_on_next_write)
   {
     message.text = "Lost messages";
   }
 
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Adding '", text, "' to message buffer");
+  LOG_PRINT(DEBUG_VERBOSE_1, "Adding '", text, "' to message buffer");
   *this->writer = message;
   std::advance(this->writer, 1);
   if (this->writer == this->message_buffer.end())
@@ -135,10 +145,10 @@ void tVoice::tMessageProcessorImplementation::AddMessage(tVoice *voice, const st
     this->message_buffer_overrun_on_next_write = true;
   }
 
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_2, "Notifying processing thread");
+  LOG_PRINT(DEBUG_VERBOSE_2, "Notifying processing thread");
   this->message_buffer_empty.notify_all();
 
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Yielding");
+  LOG_PRINT(DEBUG_VERBOSE_3, "Yielding");
   std::this_thread::yield();
 }
 
@@ -152,14 +162,14 @@ void tVoice::tMessageProcessorImplementation::ProcessMessages(tMessageProcessorI
     tMessage message;
 
     {
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Trying to acquiring lock");
+      LOG_PRINT(DEBUG_VERBOSE_3, "Trying to acquiring lock");
       std::unique_lock<std::mutex> message_buffer_lock(processor->message_buffer_mutex);
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Acquired lock");
+      LOG_PRINT(DEBUG_VERBOSE_3, "Acquired lock");
       while (processor->run_processing_thread && processor->reader == processor->writer)
       {
-        RRLIB_LOG_PRINT(DEBUG_VERBOSE_2, "Buffer empty -> going to sleep");
+        LOG_PRINT(DEBUG_VERBOSE_2, "Buffer empty -> going to sleep");
         processor->message_buffer_empty.wait(message_buffer_lock);
-        RRLIB_LOG_PRINT(DEBUG_VERBOSE_2, "Waking up");
+        LOG_PRINT(DEBUG_VERBOSE_2, "Waking up");
       }
 
       if (!processor->run_processing_thread)
@@ -167,7 +177,7 @@ void tVoice::tMessageProcessorImplementation::ProcessMessages(tMessageProcessorI
         continue;
       }
 
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_2, "Found message");
+      LOG_PRINT(DEBUG_VERBOSE_2, "Found message");
       message = *processor->reader;
       std::advance(processor->reader, 1);
       if (processor->reader == processor->message_buffer.end())
@@ -176,13 +186,13 @@ void tVoice::tMessageProcessorImplementation::ProcessMessages(tMessageProcessorI
       }
       processor->message_buffer_overrun_on_next_write = false;
 
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Releasing lock");
+      LOG_PRINT(DEBUG_VERBOSE_3, "Releasing lock");
     }
 
-    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Saying '", message.text, "'");
+    LOG_PRINT(DEBUG_VERBOSE_1, "Saying '", message.text, "'");
     message.voice->OutputText(message.text);
 
-    RRLIB_LOG_PRINT(DEBUG_VERBOSE_3, "Yielding");
+    LOG_PRINT(DEBUG_VERBOSE_3, "Yielding");
     std::this_thread::yield();
   }
 }

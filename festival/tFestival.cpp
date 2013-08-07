@@ -38,12 +38,10 @@
 
 #include <festival.h>
 
-#include "rrlib/logging/messages.h"
-
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/speech_synthesis/base/tVoiceFactory.h"
+#include "rrlib/speech_synthesis/base/log_messages.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -91,7 +89,7 @@ void InititalizeIfNeeded()
     return;
   }
 
-  RRLIB_LOG_PRINT(DEBUG, "Initializing festival");
+  LOG_PRINT(DEBUG, "Initializing festival");
 
   festival_initialize(1, cHEAP_SIZE);
   initialized = true;
@@ -114,12 +112,12 @@ void tFestival::OutputText(const std::string &text)
   InititalizeIfNeeded();
   if (!festival_eval_command(this->voice_command.c_str()))
   {
-    RRLIB_LOG_PRINT(ERROR, "Could not evaluate voice command '", voice_command, "'");
+    LOG_PRINT(ERROR, "Could not evaluate voice command '", voice_command, "'");
     return;
   }
   if (!festival_say_text(text.c_str()))
   {
-    RRLIB_LOG_PRINT(ERROR, "Speech synthesis failed.");
+    LOG_PRINT(ERROR, "Speech synthesis failed.");
   }
 }
 

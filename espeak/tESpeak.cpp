@@ -39,11 +39,10 @@
 
 #include <speak_lib.h>
 
-#include "rrlib/logging/messages.h"
-
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "rrlib/speech_synthesis/base/log_messages.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -91,7 +90,7 @@ void InititalizeIfNeeded()
     return;
   }
 
-  RRLIB_LOG_PRINT(DEBUG, "Initializing espeak");
+  LOG_PRINT(DEBUG, "Initializing espeak");
 
   int result = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK, cBUFFER_LENGTH, NULL, 0);
 
@@ -100,7 +99,7 @@ void InititalizeIfNeeded()
     throw std::runtime_error("Could not initialize espeak speech synthesis");
   }
 
-  RRLIB_LOG_PRINT(DEBUG, "Initialized espeak with sample rate: ", result, " Hz");
+  LOG_PRINT(DEBUG, "Initialized espeak with sample rate: ", result, " Hz");
   initialized = true;
 }
 
@@ -127,17 +126,17 @@ void tESpeak::OutputText(const std::string &text)
 
   switch (error)
   {
-    case EE_OK:
-      break;
-    case EE_INTERNAL_ERROR:
-      RRLIB_LOG_PRINT(ERROR, "Speech synthesis failed: internal error");
-      break;
-    case EE_BUFFER_FULL:
-      RRLIB_LOG_PRINT(ERROR, "Speech synthesis failed: buffer full");
-      break;
-    case EE_NOT_FOUND:
-      RRLIB_LOG_PRINT(ERROR, "Speech synthesis failed: not found");
-      break;
+  case EE_OK:
+    break;
+  case EE_INTERNAL_ERROR:
+    LOG_PRINT(ERROR, "Speech synthesis failed: internal error");
+    break;
+  case EE_BUFFER_FULL:
+    LOG_PRINT(ERROR, "Speech synthesis failed: buffer full");
+    break;
+  case EE_NOT_FOUND:
+    LOG_PRINT(ERROR, "Speech synthesis failed: not found");
+    break;
   }
 }
 
