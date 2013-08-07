@@ -8,6 +8,12 @@
     </sources>
   </rrlib>
 
+  <rrlib name="speech_synthesis_iostream">
+    <sources>
+      tStreamBuffer.cpp
+    </sources>
+  </rrlib>
+
   <rrlib name="speech_synthesis_base">
     <sources>
       base/*
