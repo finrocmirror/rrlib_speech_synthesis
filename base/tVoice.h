@@ -101,9 +101,10 @@ class tVoice
 
     void AddMessage(tVoice *voice, const std::string &text);
     static void ProcessMessages(tMessageProcessorImplementation *processor);
-};
+  };
 
-  typedef design_patterns::tSingletonHolder<tMessageProcessorImplementation> tMessageProcessor;
+  typedef design_patterns::tSingletonHolder<tMessageProcessorImplementation, design_patterns::singleton::Longevity> tMessageProcessor;
+  friend unsigned int GetLongevity(tMessageProcessorImplementation *);
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -122,6 +123,14 @@ private:
   virtual void OutputText(const std::string &text) = 0;
 
 };
+
+//----------------------------------------------------------------------
+// Function declarations
+//----------------------------------------------------------------------
+inline unsigned int GetLongevity(tVoice::tMessageProcessorImplementation *)
+{
+  return 0xFFFFFFFF;
+}
 
 //----------------------------------------------------------------------
 // End of namespace declaration
