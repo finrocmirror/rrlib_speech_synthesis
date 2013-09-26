@@ -75,7 +75,11 @@ namespace speech_synthesis
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
+#ifdef RRLIB_LOGGING_LESS_OUTPUT
 #define MAX_MESSAGE_LEVEL DEBUG
+#else
+#define MAX_MESSAGE_LEVEL WARNING
+#endif
 
 namespace logging
 {
@@ -126,7 +130,7 @@ void SendDataToStream(std::ostream &stream, const THead &head, const TTail &... 
   { \
     if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __LOG_PRINT__(__EXPAND_LEVEL__(level), args) \
+      __LOG_PRINT__(__EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
