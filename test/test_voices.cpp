@@ -32,11 +32,9 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 
-#include <speak_lib.h>
-#include <festival.h>
 #include <string>
-
 #include <thread>
+#include <unistd.h>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
