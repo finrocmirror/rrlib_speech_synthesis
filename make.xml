@@ -2,32 +2,32 @@
 <!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://rrlib.org/xml/1.0/make.dtd">
 <targets>
 
-  <rrlib name="speech_synthesis">
+  <rrlib>
     <sources>
       voices.cpp
     </sources>
   </rrlib>
 
-  <rrlib name="speech_synthesis_iostream">
+  <rrlib name="iostream">
     <sources>
       tStreamBuffer.cpp
     </sources>
   </rrlib>
 
-  <rrlib name="speech_synthesis_base">
+  <rrlib name="base">
     <sources>
       base/*
     </sources>
   </rrlib>
 
-  <rrlib name="speech_synthesis_espeak" optional="true"
+  <rrlib name="espeak" optional="true"
         libs="espeak">
     <sources>
       espeak/*  
     </sources>
   </rrlib>
 
-  <rrlib name="speech_synthesis_festival" optional="true"
+  <rrlib name="festival" optional="true"
         libs="festival">
     <sources>
       festival/*
