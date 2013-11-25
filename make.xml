@@ -28,7 +28,7 @@
   </rrlib>
 
   <rrlib name="festival" optional="true"
-        libs="festival">
+        libs="festival est">
     <sources>
       festival/*
     </sources>
