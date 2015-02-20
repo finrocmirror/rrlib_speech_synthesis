@@ -14,7 +14,7 @@
     </sources>
   </rrlib>
 
-  <rrlib name="base">
+  <rrlib name="base" libs="pthread">
     <sources>
       base/*
     </sources>
